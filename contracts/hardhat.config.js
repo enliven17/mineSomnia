@@ -9,7 +9,6 @@ module.exports = {
       url: "https://dream-rpc.somnia.network",
       chainId: 50312,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: 20000000000, // 20 gwei
     },
     hardhat: {
       chainId: 1337

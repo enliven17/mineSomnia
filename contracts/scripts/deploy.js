@@ -6,26 +6,23 @@ async function main() {
   // Get the signer
   const [deployer] = await hre.ethers.getSigners();
   
+  if (!deployer) {
+    throw new Error("No deployer account found. Check your private key configuration.");
+  }
+  
   console.log("📝 Deploying contracts with the account:", deployer.address);
   console.log("💰 Account balance:", (await hre.ethers.provider.getBalance(deployer.address)).toString());
 
-  // Deploy the MinesGame contract
+  // Deploy the MinesGame contract with reasonable gas limit
   const MinesGame = await hre.ethers.getContractFactory("MinesGame");
-  const minesGame = await MinesGame.deploy();
+  const minesGame = await MinesGame.deploy({
+    gasLimit: 3000000 // Reasonable gas limit
+  });
   
   await minesGame.waitForDeployment();
 
   console.log("✅ MineSomnia contract deployed to:", await minesGame.getAddress());
   console.log("📋 Contract ABI and address saved to artifacts/");
-
-  // Add some initial funds to the house (optional)
-  const initialFunds = hre.ethers.parseEther("1.0"); // 1 STT
-  await minesGame.addHouseFunds({ value: initialFunds });
-  console.log("💰 Added", hre.ethers.formatEther(initialFunds), "STT to house funds");
-
-  // Verify the deployment
-  const sharedPoolBalance = await minesGame.getSharedPoolBalance();
-  console.log("🏦 House balance:", hre.ethers.formatEther(sharedPoolBalance), "STT");
 
   console.log("\n🎉 Deployment completed successfully!");
   console.log("📝 Contract Address:", await minesGame.getAddress());

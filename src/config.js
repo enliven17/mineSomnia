@@ -1,6 +1,23 @@
 import { ethers } from 'ethers';
 import MinesGameContract from './MinesGame.json';
 
+// Local Hardhat Network Configuration
+export const hardhatNetwork = {
+  chainId: 1337,
+  name: 'Hardhat Local',
+  nativeCurrency: {
+    name: 'Ether',
+    symbol: 'ETH',
+    decimals: 18
+  },
+  rpcUrls: {
+    default: {
+      http: ['http://127.0.0.1:8545']
+    }
+  },
+  blockExplorerUrls: []
+};
+
 // Somnia Testnet Configuration
 export const somniaTestnet = {
   chainId: 50312,
@@ -18,8 +35,8 @@ export const somniaTestnet = {
   blockExplorerUrls: ['https://shannon-explorer.somnia.network']
 };
 
-// Contract address - will be updated after deployment to Somnia Testnet
-const MINES_GAME_CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000'; // Placeholder for Somnia Testnet
+// Contract address - deployed to Somnia Testnet
+const MINES_GAME_CONTRACT_ADDRESS = '0x1614E23bc20B59e7928ab95D67dB292373040530';
 
 // Provider and signer setup
 export const getProvider = () => {
