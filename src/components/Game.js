@@ -9,11 +9,9 @@ import { ethers } from 'ethers';
 const GRID_SIZE = 25;
 const GRID_COLS = 5;
 
-// Calculate multiplier based on mines and safe tiles
 const calculateMultiplier = (mines, safeTiles) => {
   if (safeTiles === 0) return 1;
   
-  // Calculate probability of hitting safe tiles consecutively
   const totalTiles = 25;
   const safeTilesRemaining = totalTiles - mines;
   
@@ -22,12 +20,10 @@ const calculateMultiplier = (mines, safeTiles) => {
     probability *= (safeTilesRemaining - i) / (totalTiles - i);
   }
   
-  // Return the inverse of probability as multiplier
   return probability > 0 ? 1 / probability : 1;
 };
 
 function Game() {
-  // State
   const [account, setAccount] = useState(null);
   const [walletBalance, setWalletBalance] = useState('0');
   const [game, setGame] = useState(null);
@@ -39,7 +35,6 @@ function Game() {
   const [error, setError] = useState(null);
   const [modalState, setModalState] = useState({ isOpen: false, isWin: false, amount: '0' });
 
-  // Fetch game state
   const fetchAndUpdateState = useCallback(async (acc) => {
     if (!acc) return;
     try {
@@ -82,16 +77,14 @@ function Game() {
     }
   }, []);
 
-  // Connect wallet
   const connectWallet = async () => {
     try {
       setError(null);
       const account = await getAccount();
       if (account) {
         setAccount(account);
-        // Try to switch to Hardhat network
         try {
-          await switchToSomniaTestnet(); // This now switches to Hardhat
+          await switchToSomniaTestnet();
         } catch (networkError) {
           console.log('Network switch failed, continuing with current network');
         }
@@ -102,7 +95,6 @@ function Game() {
     }
   };
 
-  // Start game
   const onStartGame = async () => {
     if (!account) return;
     setLoading(true);
@@ -119,7 +111,7 @@ function Game() {
       
       const estimatedGas = await contract.startGame.estimateGas(mineCount, { value: valueInWei });
       console.log('Estimated gas:', estimatedGas.toString());
-      const gasLimit = (estimatedGas * 12n) / 10n; // 20% buffer
+      const gasLimit = (estimatedGas * 12n) / 10n;
       const tx = await contract.startGame(mineCount, { 
         value: valueInWei,
         gasLimit
@@ -139,7 +131,6 @@ function Game() {
     }
   };
 
-  // Reveal tile
   const onRevealTile = async (index) => {
     if (!game?.isActive || loading || pendingTile !== null) return;
     setPendingTile(index);
@@ -161,7 +152,6 @@ function Game() {
     }
   };
 
-  // Cash out
   const onCashOut = async () => {
     if (!game || game.revealedSafeTiles === 0) return;
     setLoading(true);
@@ -182,7 +172,6 @@ function Game() {
     }
   };
 
-  // Auto connect on load
   useEffect(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
@@ -197,7 +186,6 @@ function Game() {
     }
   }, [fetchAndUpdateState]);
 
-  // Render tile content
   const renderTileContent = (index) => {
     if (!game) return null;
     
@@ -216,7 +204,6 @@ function Game() {
     return null;
   };
 
-  // Get tile styling
   const getTileStyle = (index) => {
     if (!game) {
       return "bg-[#181f2a] border-[#232b39] text-green-400 hover:bg-[#222b38]";
@@ -239,7 +226,6 @@ function Game() {
 
   return (
     <div className="min-h-screen w-full bg-[#181f2a] flex items-center justify-center py-8">
-      {/* Error Modal */}
       {error && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg">
           {error}
@@ -252,7 +238,6 @@ function Game() {
         </div>
       )}
 
-      {/* Win/Lose Modal */}
       {modalState.isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#232b39] text-white rounded-2xl p-8 text-center">
@@ -279,12 +264,9 @@ function Game() {
       )}
 
       <div className="w-full max-w-7xl flex flex-col lg:flex-row gap-8 items-center justify-center px-6">
-        {/* Sidebar - Settings - 2 Column Layout */}
         <aside className="w-full max-w-xl bg-gradient-to-b from-[#232b39]/90 to-[#1a1f2a]/90 backdrop-blur-sm rounded-3xl shadow-2xl p-5 flex flex-col h-[700px] border border-[#3d4656]/50">
           <div className="flex flex-col gap-4 flex-1">
-            {/* Top Row - Wallet and Bet Controls */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Wallet Info - Left Column */}
               <div className="bg-gradient-to-r from-[#181f2a]/80 to-[#232b39]/80 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/50 shadow-lg">
                 {account ? (
                   <div>
@@ -311,7 +293,6 @@ function Game() {
                 )}
               </div>
 
-              {/* Bet Controls - Right Column */}
               <div className="bg-[#181f2a]/40 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/30">
                 <label className="block text-gray-200 text-sm mb-2 font-medium">💰 Bet Amount</label>
                 <div className="flex items-center gap-2 mb-2">
@@ -344,9 +325,7 @@ function Game() {
               </div>
             </div>
 
-            {/* Middle Row - Mines and Game Stats */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Mines Selection - Left Column */}
               <div className="bg-[#181f2a]/40 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/30">
                 <label className="block text-gray-200 text-sm mb-2 font-medium">💣 Mines</label>
                 <select
@@ -360,7 +339,6 @@ function Game() {
                   ))}
                 </select>
                 
-                {/* Compact Multiplier Table */}
                 <div className="bg-[#0f1419]/60 backdrop-blur-sm rounded-xl p-2 border border-[#3d4656]/30">
                   <div className="text-gray-200 text-xs mb-2 font-medium">📊 Multipliers</div>
                   <div className="space-y-1 text-xs">
@@ -383,7 +361,6 @@ function Game() {
                 </div>
               </div>
 
-              {/* Game Stats - Right Column */}
               <div className="bg-[#181f2a]/40 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/30">
                 <div className="text-gray-200 text-sm mb-2 font-medium">📈 Game Stats</div>
                 {game ? (
@@ -413,14 +390,12 @@ function Game() {
               </div>
             </div>
 
-            {/* Toggle Bar - Full Width */}
             <div className="flex bg-[#2d3646]/60 backdrop-blur-sm rounded-xl p-1 border border-[#3d4656]/30">
               <button className="flex-1 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#232b39] to-[#2d3646]">Manual</button>
               <button className="flex-1 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white">Auto</button>
             </div>
           </div>
 
-          {/* Action Buttons - Bottom - Always Visible */}
           <div className="mt-3 flex-shrink-0 space-y-2">
             {game && game.revealedSafeTiles > 0 && (
               <button 
@@ -441,19 +416,15 @@ function Game() {
           </div>
         </aside>
 
-        {/* Main Grid - Enhanced Glass Design */}
         <main className="flex-1 flex flex-col items-center justify-center min-h-[700px]">
           <div className="bg-gradient-to-br from-[#232b39]/90 to-[#1a1f2a]/90 backdrop-blur-sm rounded-3xl shadow-2xl p-12 flex flex-col items-center justify-center border border-[#3d4656]/50 relative overflow-hidden w-full max-w-4xl">
-            {/* Glass Effect Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none"></div>
             
-            {/* Game Title */}
             <div className="text-center mb-10">
-              <h1 className="text-4xl font-bold text-white mb-3">🎮 MineSomnia</h1>
+              <h1 className="text-4xl font-bold text-white mb-3">🎮 mineSomnia</h1>
               <p className="text-gray-400 text-lg">Find the gems, avoid the mines!</p>
             </div>
 
-            {/* Mines Grid with Enhanced Glass Effect */}
             <div className="grid grid-cols-5 gap-4 relative z-10 mb-8">
               {Array.from({ length: GRID_SIZE }).map((_, i) => (
                 <div
@@ -461,7 +432,6 @@ function Game() {
                   onClick={() => !game?.isActive ? null : onRevealTile(i)}
                   className={`w-24 h-24 rounded-2xl flex items-center justify-center border-2 shadow-xl transition-all duration-300 text-3xl backdrop-blur-sm relative overflow-hidden hover:scale-105 ${getTileStyle(i)}`}
                 >
-                  {/* Glass Effect on Tiles */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl pointer-events-none"></div>
                   <div className="relative z-10">
                     {renderTileContent(i)}
@@ -470,10 +440,8 @@ function Game() {
               ))}
             </div>
             
-            {/* Profit Display - Enhanced Glass Design */}
             {game && game.revealedSafeTiles > 0 && (
               <div className="w-full bg-gradient-to-r from-[#2d3646]/80 to-[#232b39]/80 backdrop-blur-sm rounded-3xl p-8 border border-[#3d4656]/50 shadow-xl relative overflow-hidden">
-                {/* Glass Effect Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none"></div>
                 <div className="text-center relative z-10">
                   <div className="text-gray-200 text-lg mb-4 font-medium">💰 Current Profit</div>

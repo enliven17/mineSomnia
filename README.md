@@ -1,4 +1,4 @@
-# MineSomnia
+# mineSomnia
 
 A Mines game built on Somnia blockchain. Players bet STT tokens and play the classic Mines game.
 
@@ -50,7 +50,7 @@ npx hardhat run scripts/deploy.js --network somnia
 ### 5. Update Contract Address
 Copy deployed contract address and update `src/config.js`:
 ```javascript
-const MINES_GAME_CONTRACT_ADDRESS = '0x...'; // Your contract address
+const MINES_GAME_CONTRACT_ADDRESS = '0x...';
 ```
 
 ### 6. Start Development Server
@@ -72,20 +72,7 @@ npm start
 ```bash
 npm start          # Start development server
 npm run build      # Build for production
-npm run lint       # Run linting
-npm run lint:fix   # Fix linting issues
-npm run format     # Format code
-npm run security:audit  # Security audit
-npm run clean      # Clean install
 ```
-
-## Security
-
-- Input validation
-- Smart contract security checks
-- Environment variables for sensitive data
-- ESLint security rules
-- Regular dependency audits
 
 ## Network Configuration
 
@@ -119,14 +106,6 @@ minesomnia/
 ├── public/              # Static assets
 └── package.json
 ```
-
-## Contributing
-
-1. Fork repository
-2. Create feature branch
-3. Make changes
-4. Run linting and tests
-5. Submit pull request
 
 ## License
 
