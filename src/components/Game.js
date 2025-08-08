@@ -278,161 +278,216 @@ function Game() {
         </div>
       )}
 
-      <div className="w-full max-w-7xl flex flex-col lg:flex-row gap-16 items-center justify-center">
-        {/* Sidebar - Settings */}
-        <aside className="w-full max-w-md bg-[#232b39] rounded-2xl shadow-2xl p-8 flex flex-col justify-between h-[700px]">
-          <div className="flex flex-col gap-6">
-            {/* Wallet Info */}
-            {account ? (
-              <div className="mx-auto w-64 h-20 flex flex-col justify-center items-center bg-[#181f2a] rounded-lg border border-[#2d3646] mb-2">
-                <div className="text-gray-400 text-xs font-medium">Wallet</div>
-                <div className="text-white text-sm font-mono">{account.slice(0, 6)}...{account.slice(-4)}</div>
-                <div className="text-green-400 text-sm font-semibold">{parseFloat(walletBalance).toFixed(4)} STT</div>
-              </div>
-            ) : (
-              <button 
-                onClick={connectWallet}
-                className="w-full bg-[#7fff6a] hover:bg-[#aaff99] text-[#181f2a] font-bold rounded-lg py-4 text-lg transition-all duration-150 shadow-lg"
-              >
-                Connect Wallet
-              </button>
-            )}
-
-            {/* Toggle Bar */}
-            <div className="flex bg-[#2d3646] rounded-xl p-1">
-              <button className="flex-1 py-3 rounded-lg text-sm font-semibold text-white bg-[#232b39]">Manual</button>
-              <button className="flex-1 py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white">Auto</button>
-            </div>
-
-            {/* Bet Amount */}
-            <div>
-              <label className="block text-gray-400 text-xs mb-2">Bet Amount</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={betAmount}
-                  onChange={e => setBetAmount(e.target.value)}
-                  disabled={game?.isActive || loading}
-                  className="flex-1 bg-[#181f2a] border border-[#232b39] text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
-                  min="0"
-                  step="0.00000001"
-                />
-                <span className="text-yellow-400 text-lg">🪙</span>
-              </div>
-              <div className="flex gap-2 mt-3">
-                <button 
-                  onClick={() => setBetAmount((parseFloat(betAmount) / 2).toString())}
-                  className="flex-1 bg-[#232b39] text-gray-400 rounded-md py-2 text-xs hover:text-white"
-                >
-                  ½
-                </button>
-                <button 
-                  onClick={() => setBetAmount((parseFloat(betAmount) * 2).toString())}
-                  className="flex-1 bg-[#232b39] text-gray-400 rounded-md py-2 text-xs hover:text-white"
-                >
-                  2x
-                </button>
-              </div>
-            </div>
-
-            {/* Mines */}
-            <div>
-              <label className="block text-gray-400 text-xs mb-2">Mines</label>
-              <select
-                value={mineCount}
-                onChange={e => setMineCount(Number(e.target.value))}
-                disabled={game?.isActive || loading}
-                className="w-full bg-[#181f2a] border border-[#232b39] text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
-              >
-                {Array.from({ length: 24 }, (_, i) => i + 1).map(num => (
-                  <option key={num} value={num}>{num}</option>
-                ))}
-              </select>
-              
-              {/* Multiplier Table */}
-              <div className="mt-4 bg-[#181f2a] rounded-lg p-3">
-                <div className="text-gray-400 text-xs mb-2">Multipliers</div>
-                <div className="space-y-1 text-xs">
-                  <div className="grid grid-cols-3 gap-2 text-gray-300 font-medium">
-                    <span>Mines</span>
-                    <span className="text-center">Safe</span>
-                    <span className="text-right">Multiplier</span>
-                  </div>
-                  {[1, 2, 3, 4, 5].map(safeCount => {
-                    const multiplier = calculateMultiplier(mineCount, safeCount);
-                    return (
-                      <div key={safeCount} className="grid grid-cols-3 gap-2">
-                        <span className="text-red-400">{mineCount}</span>
-                        <span className="text-green-400 text-center">{safeCount}</span>
-                        <span className="text-yellow-400 text-right">{multiplier.toFixed(2)}x</span>
+      <div className="w-full max-w-7xl flex flex-col lg:flex-row gap-8 items-center justify-center px-6">
+        {/* Sidebar - Settings - 2 Column Layout */}
+        <aside className="w-full max-w-xl bg-gradient-to-b from-[#232b39]/90 to-[#1a1f2a]/90 backdrop-blur-sm rounded-3xl shadow-2xl p-5 flex flex-col h-[700px] border border-[#3d4656]/50">
+          <div className="flex flex-col gap-4 flex-1">
+            {/* Top Row - Wallet and Bet Controls */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Wallet Info - Left Column */}
+              <div className="bg-gradient-to-r from-[#181f2a]/80 to-[#232b39]/80 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/50 shadow-lg">
+                {account ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-gray-300 text-sm font-medium">💼 Wallet</div>
+                      <div className="text-green-400 text-xs font-semibold">Connected</div>
+                    </div>
+                    <div className="bg-[#0f1419]/60 backdrop-blur-sm rounded-xl p-2 border border-[#3d4656]/30">
+                      <div className="text-gray-400 text-xs mb-1">Address</div>
+                      <div className="text-white text-sm font-mono mb-2">{account.slice(0, 6)}...{account.slice(-4)}</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-400 text-xs">Balance</span>
+                        <span className="text-green-400 text-base font-bold">{parseFloat(walletBalance).toFixed(4)} STT</span>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Game Stats */}
-            {game && (
-              <div className="bg-[#181f2a] rounded-lg p-4">
-                <div className="text-gray-400 text-xs mb-3">Game Stats</div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Bet:</span>
-                    <span className="text-white">{ethers.formatEther(game.betAmount)} STT</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Mines:</span>
-                    <span className="text-red-400">{game.totalMines}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Safe:</span>
-                    <span className="text-green-400">{game.revealedSafeTiles}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Profit:</span>
-                    <span className="text-yellow-400">{ethers.formatEther(liveProfit)} STT</span>
-                  </div>
-                </div>
-                {game.revealedSafeTiles > 0 && (
+                ) : (
                   <button 
-                    onClick={onCashOut}
-                    disabled={loading}
-                    className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-[#181f2a] font-bold rounded-lg py-3 text-sm transition-all duration-150"
+                    onClick={connectWallet}
+                    className="w-full bg-gradient-to-r from-[#7fff6a] to-[#aaff99] hover:from-[#aaff99] hover:to-[#7fff6a] text-[#181f2a] font-bold rounded-2xl py-3 text-lg transition-all duration-150 shadow-lg"
                   >
-                    {loading ? 'Cashing Out...' : 'Cash Out'}
+                    🔗 Connect Wallet
                   </button>
                 )}
               </div>
-            )}
+
+              {/* Bet Controls - Right Column */}
+              <div className="bg-[#181f2a]/40 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/30">
+                <label className="block text-gray-200 text-sm mb-2 font-medium">💰 Bet Amount</label>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="number"
+                    value={betAmount}
+                    onChange={e => setBetAmount(e.target.value)}
+                    disabled={game?.isActive || loading}
+                    className="flex-1 bg-[#0f1419]/80 backdrop-blur-sm border border-[#3d4656]/50 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 disabled:opacity-50"
+                    min="0"
+                    step="0.00000001"
+                  />
+                  <span className="text-yellow-400 text-sm font-semibold">STT</span>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setBetAmount((parseFloat(betAmount) / 2).toString())}
+                    className="flex-1 bg-[#232b39]/60 backdrop-blur-sm text-gray-300 rounded-xl py-1 text-xs hover:text-white hover:bg-[#2d3646]/60 border border-[#3d4656]/30 transition-all"
+                  >
+                    ½
+                  </button>
+                  <button 
+                    onClick={() => setBetAmount((parseFloat(betAmount) * 2).toString())}
+                    className="flex-1 bg-[#232b39]/60 backdrop-blur-sm text-gray-300 rounded-xl py-1 text-xs hover:text-white hover:bg-[#2d3646]/60 border border-[#3d4656]/30 transition-all"
+                  >
+                    2x
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Middle Row - Mines and Game Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Mines Selection - Left Column */}
+              <div className="bg-[#181f2a]/40 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/30">
+                <label className="block text-gray-200 text-sm mb-2 font-medium">💣 Mines</label>
+                <select
+                  value={mineCount}
+                  onChange={e => setMineCount(Number(e.target.value))}
+                  disabled={game?.isActive || loading}
+                  className="w-full bg-[#0f1419]/80 backdrop-blur-sm border border-[#3d4656]/50 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 disabled:opacity-50 mb-3"
+                >
+                  {Array.from({ length: 24 }, (_, i) => i + 1).map(num => (
+                    <option key={num} value={num}>{num}</option>
+                  ))}
+                </select>
+                
+                {/* Compact Multiplier Table */}
+                <div className="bg-[#0f1419]/60 backdrop-blur-sm rounded-xl p-2 border border-[#3d4656]/30">
+                  <div className="text-gray-200 text-xs mb-2 font-medium">📊 Multipliers</div>
+                  <div className="space-y-1 text-xs">
+                    <div className="grid grid-cols-3 gap-2 text-gray-200 font-medium">
+                      <span>Mines</span>
+                      <span className="text-center">Safe</span>
+                      <span className="text-right">Multiplier</span>
+                    </div>
+                    {[1, 2, 3, 4, 5].map(safeCount => {
+                      const multiplier = calculateMultiplier(mineCount, safeCount);
+                      return (
+                        <div key={safeCount} className="grid grid-cols-3 gap-2">
+                          <span className="text-red-400">{mineCount}</span>
+                          <span className="text-green-400 text-center">{safeCount}</span>
+                          <span className="text-yellow-400 text-right">{multiplier.toFixed(2)}x</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Game Stats - Right Column */}
+              <div className="bg-[#181f2a]/40 backdrop-blur-sm rounded-2xl p-3 border border-[#3d4656]/30">
+                <div className="text-gray-200 text-sm mb-2 font-medium">📈 Game Stats</div>
+                {game ? (
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Bet:</span>
+                      <span className="text-white font-semibold">{ethers.formatEther(game.betAmount)} STT</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Mines:</span>
+                      <span className="text-red-400 font-semibold">{game.totalMines}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Safe:</span>
+                      <span className="text-green-400 font-semibold">{game.revealedSafeTiles}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Profit:</span>
+                      <span className="text-yellow-400 font-semibold">{ethers.formatEther(liveProfit)} STT</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-400 text-sm text-center py-4">
+                    No active game
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Toggle Bar - Full Width */}
+            <div className="flex bg-[#2d3646]/60 backdrop-blur-sm rounded-xl p-1 border border-[#3d4656]/30">
+              <button className="flex-1 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#232b39] to-[#2d3646]">Manual</button>
+              <button className="flex-1 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white">Auto</button>
+            </div>
           </div>
 
-          {/* Bet Button - Bottom */}
-          <div className="mt-6">
+          {/* Action Buttons - Bottom - Always Visible */}
+          <div className="mt-3 flex-shrink-0 space-y-2">
+            {game && game.revealedSafeTiles > 0 && (
+              <button 
+                onClick={onCashOut}
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-[#181f2a] font-bold rounded-2xl py-3 text-base transition-all duration-150 shadow-lg"
+              >
+                {loading ? 'Cashing Out...' : '💰 Cash Out'} 
+              </button>
+            )}
             <button 
               onClick={onStartGame}
               disabled={!account || game?.isActive || loading}
-              className="w-full bg-[#7fff6a] hover:bg-[#aaff99] disabled:bg-gray-600 disabled:cursor-not-allowed text-[#181f2a] font-bold rounded-lg py-4 text-lg transition-all duration-150 shadow-lg"
+              className="w-full bg-gradient-to-r from-[#7fff6a] to-[#aaff99] hover:from-[#aaff99] hover:to-[#7fff6a] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-[#181f2a] font-bold rounded-2xl py-3 text-lg transition-all duration-150 shadow-lg"
             >
-              {loading ? 'Starting...' : 'Bet'}
+              {loading ? 'Starting...' : '🎯 Bet'} 
             </button>
           </div>
         </aside>
 
-        {/* Main Grid */}
-        <main className="flex-1 flex flex-col items-center justify-center">
-          <div className="bg-[#232b39] rounded-3xl shadow-2xl p-12 flex flex-col items-center justify-center">
-            <div className="grid grid-cols-5 gap-8">
+        {/* Main Grid - Enhanced Glass Design */}
+        <main className="flex-1 flex flex-col items-center justify-center min-h-[700px]">
+          <div className="bg-gradient-to-br from-[#232b39]/90 to-[#1a1f2a]/90 backdrop-blur-sm rounded-3xl shadow-2xl p-12 flex flex-col items-center justify-center border border-[#3d4656]/50 relative overflow-hidden w-full max-w-4xl">
+            {/* Glass Effect Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none"></div>
+            
+            {/* Game Title */}
+            <div className="text-center mb-10">
+              <h1 className="text-4xl font-bold text-white mb-3">🎮 MineSomnia</h1>
+              <p className="text-gray-400 text-lg">Find the gems, avoid the mines!</p>
+            </div>
+
+            {/* Mines Grid with Enhanced Glass Effect */}
+            <div className="grid grid-cols-5 gap-4 relative z-10 mb-8">
               {Array.from({ length: GRID_SIZE }).map((_, i) => (
                 <div
                   key={i}
                   onClick={() => !game?.isActive ? null : onRevealTile(i)}
-                  className={`w-32 h-32 rounded-2xl flex items-center justify-center border-2 shadow-md transition-all duration-150 text-5xl ${getTileStyle(i)}`}
+                  className={`w-24 h-24 rounded-2xl flex items-center justify-center border-2 shadow-xl transition-all duration-300 text-3xl backdrop-blur-sm relative overflow-hidden hover:scale-105 ${getTileStyle(i)}`}
                 >
-                  {renderTileContent(i)}
+                  {/* Glass Effect on Tiles */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl pointer-events-none"></div>
+                  <div className="relative z-10">
+                    {renderTileContent(i)}
+                  </div>
                 </div>
               ))}
             </div>
+            
+            {/* Profit Display - Enhanced Glass Design */}
+            {game && game.revealedSafeTiles > 0 && (
+              <div className="w-full bg-gradient-to-r from-[#2d3646]/80 to-[#232b39]/80 backdrop-blur-sm rounded-3xl p-8 border border-[#3d4656]/50 shadow-xl relative overflow-hidden">
+                {/* Glass Effect Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none"></div>
+                <div className="text-center relative z-10">
+                  <div className="text-gray-200 text-lg mb-4 font-medium">💰 Current Profit</div>
+                  <div className="text-yellow-400 text-5xl font-bold mb-4">{ethers.formatEther(liveProfit)} STT</div>
+                  <div className="bg-[#181f2a]/60 backdrop-blur-sm rounded-2xl p-6 border border-[#3d4656]/30">
+                    <div className="text-green-400 text-lg font-semibold mb-3">
+                      🎯 {game.revealedSafeTiles} safe tiles revealed
+                    </div>
+                    <div className="text-gray-300 text-base">
+                      Keep going to increase your winnings! 🚀
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
