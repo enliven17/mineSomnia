@@ -16,8 +16,7 @@ async function main() {
   // Deploy the MinesGame contract with high gas price for Somnia
   const MinesGame = await hre.ethers.getContractFactory("MinesGame");
   const minesGame = await MinesGame.deploy({
-    gasLimit: 3000000, // Higher gas limit
-    gasPrice: hre.ethers.parseUnits("20", "gwei") // Much higher gas price for Somnia
+    gasLimit: 3000000
   });
   
   await minesGame.waitForDeployment();

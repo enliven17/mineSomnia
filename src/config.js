@@ -36,7 +36,7 @@ export const somniaTestnet = {
 };
 
 // Contract address - latest deployed to Somnia Testnet
-const MINES_GAME_CONTRACT_ADDRESS = '0xE9A0d77782f458F0d4bB633961eF241c8dEB693C';
+const MINES_GAME_CONTRACT_ADDRESS = '0x3a8d19bedca566e04B10D829580Df4a039683b37';
 
 // Provider and signer setup
 export const getProvider = () => {

@@ -117,10 +117,12 @@ function Game() {
       const valueInWei = ethers.parseEther(betAmount);
       console.log('Parsed bet amount:', valueInWei.toString());
       
-      // Create transaction with explicit value
+      const estimatedGas = await contract.startGame.estimateGas(mineCount, { value: valueInWei });
+      console.log('Estimated gas:', estimatedGas.toString());
+      const gasLimit = (estimatedGas * 12n) / 10n; // 20% buffer
       const tx = await contract.startGame(mineCount, { 
         value: valueInWei,
-        gasLimit: 500000 // Add explicit gas limit
+        gasLimit
       });
       console.log('Transaction sent:', tx.hash);
       
