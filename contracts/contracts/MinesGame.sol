@@ -20,10 +20,8 @@ contract MinesGame {
     event GameWon(address indexed player, uint256 winnings);
     event GameLost(address indexed player);
 
-    constructor() {
-        // Initialize with some starting balance for the house
-        sharedPoolBalance = 0;
-    }
+    // Empty constructor - no initialization needed
+    constructor() {}
 
     function startGame(uint8 numberOfMines) external payable {
         require(msg.value > 0, "Bet amount must be greater than 0");

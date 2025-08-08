@@ -35,8 +35,8 @@ export const somniaTestnet = {
   blockExplorerUrls: ['https://shannon-explorer.somnia.network']
 };
 
-// Contract address - deployed to Somnia Testnet
-const MINES_GAME_CONTRACT_ADDRESS = '0x1614E23bc20B59e7928ab95D67dB292373040530';
+// Contract address - latest deployed to Somnia Testnet
+const MINES_GAME_CONTRACT_ADDRESS = '0xE9A0d77782f458F0d4bB633961eF241c8dEB693C';
 
 // Provider and signer setup
 export const getProvider = () => {

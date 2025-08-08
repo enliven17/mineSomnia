@@ -13,10 +13,11 @@ async function main() {
   console.log("📝 Deploying contracts with the account:", deployer.address);
   console.log("💰 Account balance:", (await hre.ethers.provider.getBalance(deployer.address)).toString());
 
-  // Deploy the MinesGame contract with reasonable gas limit
+  // Deploy the MinesGame contract with high gas price for Somnia
   const MinesGame = await hre.ethers.getContractFactory("MinesGame");
   const minesGame = await MinesGame.deploy({
-    gasLimit: 3000000 // Reasonable gas limit
+    gasLimit: 3000000, // Higher gas limit
+    gasPrice: hre.ethers.parseUnits("20", "gwei") // Much higher gas price for Somnia
   });
   
   await minesGame.waitForDeployment();
