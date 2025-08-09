@@ -87,3 +87,4 @@ coverage/
 
 # TernJS
 .tern-port
+.vercel
